@@ -1,0 +1,227 @@
+@page "/tasks/edit/{id:guid}"
+@model TaskFlow.API.Pages.Tasks.EditModel
+@{
+    ViewData["Title"] = "Editar Tarefa";
+}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - TaskFlow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1em;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+        
+        .back-link:hover {
+            opacity: 0.8;
+        }
+        
+        .edit-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .required {
+            color: #dc3545;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-cancel {
+            background: #6c757d;
+        }
+        
+        .btn-cancel:hover {
+            background: #5a6268;
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .status-info {
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #004085;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Voltar para Tarefas</a>
+        
+        <div class="header">
+            <h1>✏️ Editar Tarefa</h1>
+            <p>Atualize os detalhes da sua tarefa</p>
+        </div>
+        
+        <div class="edit-section">
+            @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+            {
+                <div class="success-message">
+                    @Model.SuccessMessage
+                </div>
+            }
+            
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="error-message">
+                    @Model.ErrorMessage
+                </div>
+            }
+            
+            <form method="post" asp-route-id="@Model.Task?.Id">
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <label for="Title">Título <span class="required">*</span></label>
+                    <input type="text" id="Title" name="Title" value="@Model.Title" required maxlength="200" />
+                </div>
+                
+                <div class="form-group">
+                    <label for="Description">Descrição</label>
+                    <textarea id="Description" name="Description">@Model.Description</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="Status">Status <span class="required">*</span></label>
+                    <select id="Status" name="Status" required>
+                        <option value="Pendente" selected="@(Model.Status == "Pendente")">Pendente</option>
+                        <option value="Concluida" selected="@(Model.Status == "Concluida")">Concluída</option>
+                    </select>
+                    <div class="status-info">
+                        Selecione o status atual da tarefa. Marque como "Concluída" quando terminar.
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <a href="/" class="btn btn-cancel">Cancelar</a>
+                    <button type="submit" class="btn">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

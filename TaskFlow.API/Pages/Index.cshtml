@@ -1,0 +1,350 @@
+@page
+@model TaskFlow.API.Pages.IndexModel
+@{
+    ViewData["Title"] = "Minhas Tarefas";
+}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - TaskFlow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+        
+        .header .username {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .logout-btn {
+            float: right;
+            padding: 8px 16px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .logout-btn:hover {
+            background: #c82333;
+        }
+        
+        .create-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .create-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .success-message {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .tasks-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 30px;
+        }
+        
+        .tasks-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .task-item {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .task-item.completed {
+            border-left-color: #28a745;
+            opacity: 0.8;
+        }
+        
+        .task-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .task-description {
+            color: #666;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .task-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.9em;
+            color: #999;
+            margin-bottom: 15px;
+        }
+        
+        .task-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .task-status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .task-status.completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-edit {
+            padding: 8px 16px;
+            background: #ffc107;
+            color: #333;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .btn-edit:hover {
+            background: #e0a800;
+        }
+        
+        .btn-delete {
+            padding: 8px 16px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .btn-delete:hover {
+            background: #c82333;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="/logout" class="logout-btn">Sair</a>
+            <h1>📋 Minhas Tarefas</h1>
+            <p class="username">Olá, @Model.Username!</p>
+            <p style="color: #999; font-size: 0.9em; margin-top: 5px;">📍 Página: / (raiz)</p>
+        </div>
+        
+        <div class="create-section">
+            <h2>➕ Nova Tarefa</h2>
+            
+            @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+            {
+                <div class="success-message">
+                    @Model.SuccessMessage
+                </div>
+            }
+            
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="error-message">
+                    @Model.ErrorMessage
+                </div>
+            }
+            
+            <form method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="handler" value="Create" />
+                <div class="form-group">
+                    <label for="Title">Título *</label>
+                    <input type="text" id="Title" name="Title" required maxlength="200" />
+                </div>
+                
+                <div class="form-group">
+                    <label for="Description">Descrição (opcional)</label>
+                    <textarea id="Description" name="Description"></textarea>
+                </div>
+                
+                <button type="submit" class="btn">Criar Tarefa</button>
+            </form>
+        </div>
+        
+        <div class="tasks-section">
+            <h2>📝 Suas Tarefas</h2>
+            
+            @if (Model.Tasks == null || !Model.Tasks.Any())
+            {
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <p>Você ainda não tem tarefas. Crie sua primeira tarefa acima!</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var task in Model.Tasks)
+                {
+                    <div class="task-item @(task.Status == "Concluida" ? "completed" : "")">
+                        <div class="task-title">@task.Title</div>
+                        
+                        @if (!string.IsNullOrEmpty(task.Description))
+                        {
+                            <div class="task-description">@task.Description</div>
+                        }
+                        
+                        <div class="task-meta">
+                            <span class="task-status @(task.Status == "Concluida" ? "completed" : "pending")">
+                                @task.Status
+                            </span>
+                            <span>Criada em: @task.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                        </div>
+                        
+                        <div class="task-actions">
+                            <a href="/tasks/edit/@task.Id" class="btn-edit">Editar</a>
+                            <form method="post" style="display: inline;" 
+                                  onsubmit="return confirm('Tem certeza que deseja excluir esta tarefa?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="handler" value="Delete" />
+                                <input type="hidden" name="id" value="@task.Id" />
+                                <button type="submit" class="btn-delete">Excluir</button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</body>
+</html>
