@@ -578,6 +578,58 @@ TaskFlow.sln
 
 ---
 
+## 🤖 Configuração do MCP GitHub (Kiro)
+
+O projeto utiliza o servidor MCP do GitHub para integração com o Kiro. A configuração fica em `.kiro/settings/mcp.json`.
+
+### Pré-requisitos
+
+1. **Instalar `uv`** (gerenciador de pacotes Python que fornece o `uvx`):
+   ```bash
+   pip install uv
+   ```
+   Ou consulte o guia oficial: https://docs.astral.sh/uv/getting-started/installation/
+
+2. **Gerar um Personal Access Token (classic)** no GitHub:
+   - Acesse: https://github.com/settings/tokens/new
+   - Marque o escopo **`repo`** (Full control of private repositories)
+   - Copie o token gerado
+
+### Configuração
+
+Crie ou edite o arquivo `.kiro/settings/mcp.json` com o seguinte conteúdo:
+
+```json
+{
+  "mcpServers": {
+    "github": {
+      "command": "C:/Users/<seu-usuario>/.local/bin/uvx.exe",
+      "args": [
+        "mcp-github"
+      ],
+      "env": {
+        "GITHUB_TOKEN": "<seu-github-token>"
+      },
+      "disabled": false,
+      "autoApprove": [
+        "create_repository",
+        "search_repositories"
+      ]
+    }
+  }
+}
+```
+
+> **Atenção:** Substitua `<seu-usuario>` pelo seu nome de usuário do Windows e `<seu-github-token>` pelo token gerado. **Nunca commite tokens reais no repositório.**
+
+### Observações
+
+- O caminho do `uvx.exe` pode variar. Após instalar o `uv`, verifique com: `where uvx`
+- O servidor reconecta automaticamente quando a configuração é salva
+- `autoApprove` define quais ferramentas não precisam de confirmação manual no Kiro
+
+---
+
 ## 🪝 Agent Hooks
 
 Hooks são automações que disparam ações do agente Kiro em resposta a eventos do IDE. Os hooks do projeto ficam em `.kiro/hooks/`.
